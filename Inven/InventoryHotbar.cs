@@ -36,7 +36,6 @@ public partial class InventoryHotbar : Control
 				{
 					if (_slots[i].GetGlobalRect().HasPoint(mouse.GlobalPosition))
 					{
-						
 						InventoryGui.Instance.HandleHotbarSlotInput(@event, i);
 						GetViewport().SetInputAsHandled();
 						return;
@@ -94,20 +93,26 @@ public partial class InventoryHotbar : Control
 		foreach (Node child in panel.GetChildren())
 		{
 			if (child is Sprite2D sprite && sprite.Texture != ResourceLoader.Load<Texture2D>("res://Inven/SlotInv.png"))
+			{
+				panel.RemoveChild(child);
 				child.QueueFree();
+			}
 			else if (child is Label)
+			{
+				panel.RemoveChild(child);
 				child.QueueFree();
+			}
 		}
 		
 		Item item = InventoryGui.Instance.GetHotbarItem(slot);
 		if (item != null)
 		{
-			// ajoute icon de l'item
-			Vector2 itemPosition = panel.CustomMinimumSize / 2 + new Vector2(6, -9);
+			// ajoute icon de l'item centré et à l'échelle correcte
 			panel.AddChild(new Sprite2D {
 				Texture = item.Icon as Texture2D,
-				Position = itemPosition,
-				Scale = new Vector2(1.5f, 1.5f)
+				Position = new Vector2(17, 17),
+				Scale = new Vector2(0.24f, 0.24f),
+				Centered = true
 			});
 			
 			// ajoute label quantité s'il y a + de 1
@@ -136,5 +141,17 @@ public partial class InventoryHotbar : Control
 		int selectedSlot = InventoryGui.Instance.SelectedHotbarSlot;
 		for (int i = 0; i < _slots.Count; i++)
 			_slots[i].Modulate = i == selectedSlot ? new Color(1.2f, 1.2f, 0.8f) : Colors.White;
+	}
+
+	public int GetHoveredSlotIndex(Vector2 globalMousePos)
+	{
+		for (int i = 0; i < _slots.Count; i++)
+		{
+			if (_slots[i].GetGlobalRect().HasPoint(globalMousePos))
+			{
+				return i;
+			}
+		}
+		return -1;
 	}
 }

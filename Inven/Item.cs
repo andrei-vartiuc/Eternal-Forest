@@ -3,7 +3,7 @@ using System;
 
 public partial class Item : Node2D
 {
-	public string Name { get; set; }
+	public new string Name { get; set; }
 	public Texture2D Icon { get; set; } 
 	
 	// prop pour stacker item

@@ -44,6 +44,11 @@ public partial class AutoSaveSystem : Node
         }
     }
     
+    public void SaveGameManual()
+    {
+        PerformAutoSave();
+    }
+    
     private async void PerformAutoSave()
     {
         _isSaving = true;
@@ -70,20 +75,31 @@ public partial class AutoSaveSystem : Node
         var saveData = new GameSaveData();
         
         // Récupérer le joueur
-        Node2D player = GetTree().Root.GetNode<Node2D>("GameSolo/Player");
+        Node2D player = GetTree().Root.GetNodeOrNull<Node2D>("GameSolo/Node2D/Player");
         if (player != null)
         {
             saveData.PlayerPosition = player.GlobalPosition;
             
             // Récupérer la santé du joueur si possible
-            if (player.HasMethod("GetHealth"))
+            if (player is Player p)
+            {
+                saveData.PlayerHealth = p._life;
+            }
+            else if (player.HasMethod("GetHealth"))
             {
                 saveData.PlayerHealth = (float)player.Call("GetHealth");
             }
             else
             {
-                saveData.PlayerHealth = 100.0f; // Valeur par défaut
+                saveData.PlayerHealth = 20.0f; // Valeur par défaut
             }
+        }
+        
+        // Récupérer l'inventaire
+        if (InventoryGui.Instance != null)
+        {
+            saveData.Inventory = InventoryGui.Instance.SerializeInventory();
+            saveData.Hotbar = InventoryGui.Instance.SerializeHotbar();
         }
         
         // Marquer que la carte et le sol ont été générés

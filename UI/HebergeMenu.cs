@@ -13,7 +13,7 @@ public partial class HebergeMenu : Control
         retourButton.Pressed += OnRetourPressed;
     }
     
-    private async void OnNouveauPressed()
+    private void OnNouveauPressed()
     {
         GetNode<GameManager>("/root/GameManager").IsNewGame = false;
         GameMultiplayer.IsServer = true;

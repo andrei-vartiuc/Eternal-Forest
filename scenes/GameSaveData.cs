@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+
 namespace EternalForest.Game
 {
     public class GameSaveData
@@ -8,6 +10,10 @@ namespace EternalForest.Game
         public string CurrentLevel { get; set; }
         public bool MapGenerated { get; set; }
         public bool FloorGenerated { get; set; }
+        
+        // Listes d'items de l'inventaire sérialisées sous forme de Dictionnaires Godot
+        public List<Godot.Collections.Dictionary> Inventory { get; set; } = new List<Godot.Collections.Dictionary>();
+        public List<Godot.Collections.Dictionary> Hotbar { get; set; } = new List<Godot.Collections.Dictionary>();
         
         public Godot.Collections.Dictionary ToJson()
         {
@@ -19,6 +25,22 @@ namespace EternalForest.Game
             data["current_level"] = CurrentLevel;
             data["map_generated"] = MapGenerated;
             data["floor_generated"] = FloorGenerated;
+            
+            // Sérialiser l'inventaire principal
+            var invArray = new Godot.Collections.Array();
+            foreach (var item in Inventory)
+            {
+                invArray.Add(item);
+            }
+            data["inventory"] = invArray;
+
+            // Sérialiser la hotbar
+            var hbArray = new Godot.Collections.Array();
+            foreach (var item in Hotbar)
+            {
+                hbArray.Add(item);
+            }
+            data["hotbar"] = hbArray;
             
             return data;
         }
@@ -53,6 +75,38 @@ namespace EternalForest.Game
             if (data.ContainsKey("floor_generated"))
             {
                 saveData.FloorGenerated = (bool)data["floor_generated"];
+            }
+
+            if (data.ContainsKey("inventory"))
+            {
+                var invArray = data["inventory"].AsGodotArray();
+                foreach (var itemVal in invArray)
+                {
+                    if (itemVal.VariantType == Variant.Type.Dictionary)
+                    {
+                        saveData.Inventory.Add(itemVal.AsGodotDictionary());
+                    }
+                    else
+                    {
+                        saveData.Inventory.Add(null);
+                    }
+                }
+            }
+
+            if (data.ContainsKey("hotbar"))
+            {
+                var hbArray = data["hotbar"].AsGodotArray();
+                foreach (var itemVal in hbArray)
+                {
+                    if (itemVal.VariantType == Variant.Type.Dictionary)
+                    {
+                        saveData.Hotbar.Add(itemVal.AsGodotDictionary());
+                    }
+                    else
+                    {
+                        saveData.Hotbar.Add(null);
+                    }
+                }
             }
             
             return saveData;

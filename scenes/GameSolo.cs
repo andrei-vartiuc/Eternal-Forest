@@ -48,6 +48,10 @@ public partial class GameSolo : Node2D
 			LoadLatestSave();
 		}
 
+		// Instancier et ajouter le système d'auto-sauvegarde
+		AutoSaveSystem autoSave = new AutoSaveSystem();
+		AddChild(autoSave);
+
 		// Ajouter la hotbar au CanvasLayer
 		CanvasLayer canvasLayer = GetNode<CanvasLayer>("CanvasLayer");
 		if (canvasLayer != null)
@@ -57,6 +61,14 @@ public partial class GameSolo : Node2D
 			{
 				Node hotbarInstance = hotbarScene.Instantiate();
 				canvasLayer.AddChild(hotbarInstance);
+			}
+
+			// Ajouter le menu echap au CanvasLayer
+			PackedScene escapeMenuScene = ResourceLoader.Load<PackedScene>("res://UI/escape_menu.tscn");
+			if (escapeMenuScene != null)
+			{
+				Node escapeMenuInstance = escapeMenuScene.Instantiate();
+				canvasLayer.AddChild(escapeMenuInstance);
 			}
 		}
 	}
@@ -284,16 +296,14 @@ public partial class GameSolo : Node2D
 	private void ApplySaveData(GameSaveData saveData)
 	{
 		// Récupérer le joueur
-		Node2D player = GetNode<Node2D>("Player");
-		if (player != null)
+		Player p = player ?? GetNodeOrNull<Player>("Node2D/Player");
+		if (p != null)
 		{
-			player.GlobalPosition = saveData.PlayerPosition;
-		
-			// Utiliser Call pour appeler une méthode sur le nœud
-			if (player.HasMethod("SetHealth"))
-			{
-				player.Call("SetHealth", saveData.PlayerHealth);
-			}
+			p.GlobalPosition = saveData.PlayerPosition;
+			p._life = (int)saveData.PlayerHealth;
+
+			// Mettre à jour l'interface des cœurs
+			HeartHealth.Instance?.UpdateHearts(p._life, 20);
 		
 			GD.Print($"Position du joueur chargée: {saveData.PlayerPosition}, Santé: {saveData.PlayerHealth}");
 		}

@@ -176,18 +176,7 @@ public partial class Orc : CharacterBody2D
     
     private void OnAnimationFinished()
     {
-        if (_waitingToHit)
-        {
-            _waitingToHit = false;
-
-            if (principal_target != null &&
-                principal_target.GlobalPosition.DistanceTo(GlobalPosition) <= _attackRange)
-            {
-                principal_target.TakeDamage(_damage);
-            }
-
-            _isAttacking = false;
-        }
+        // Géré via le timer de cooldown de l'attaque
     }
 
     
@@ -217,11 +206,10 @@ public partial class Orc : CharacterBody2D
             _patrolDirection = -_patrolDirection; // on inverse la direction
         }
     }
-
     private void Attack(Player player)
     {
         _isAttacking = true; // varibale a true pour dire que il attaque 
-        _waitingToHit = true;
+        _waitingToHit = false;
 
         // animations d'attaque en fonction du dernier endroit ou il regardait 
         if (_lastDirection == "right")
@@ -235,11 +223,11 @@ public partial class Orc : CharacterBody2D
         
         // lance le timer pour attaquer
         _attackCooldownTimer.Start();
-        
+
         // inflige des degats au joueur si il est dans la range d'attaque
-        if (principal_target.GlobalPosition.DistanceTo(GlobalPosition) <= _attackRange)
+        if (principal_target != null && principal_target.GlobalPosition.DistanceTo(GlobalPosition) <= _attackRange)
         {
-            principal_target.TakeDamage(_damage); // inflige des degats au joueur
+            principal_target.TakeDamage(_damage);
         }
     }
 

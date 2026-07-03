@@ -86,14 +86,19 @@ public partial class map_gen : Node2D
         {
             Node2D instance = (Node2D)scene.Instantiate();
             
-            int a = random.Next(x + 100, x + mapWidth - 100); // position x aleatoire
+            int a = random.Next(x + 100, x + mapWidth - 100);
+            int b = random.Next(y + 100, y + mapHeight - 100);
             
-            int b = random.Next(y + 100, y + mapHeight - 100); // position y aleatoire
-            
-            // placement de l'objet si ok
             instance.Position = new Vector2(a, b);
             AddChild(instance);
 
+            // Ajouter les rochers au groupe Rocks et définir leur vie
+            string nameLower = instance.Name.ToString().ToLower();
+            if (nameLower.Contains("rock") || nameLower.Contains("iron") || nameLower.Contains("cuivre") || nameLower.Contains("ore"))
+            {
+                instance.AddToGroup("Rocks");
+                instance.SetMeta("health", 3);
+            }
         }
     }
 }

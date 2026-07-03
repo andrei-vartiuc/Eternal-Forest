@@ -3,7 +3,6 @@ using Godot;
 public partial class CameraFollow : Camera2D
 {
 	[Export] public Node2D ObjectToFollow;
-	public bool Enabled { get; set; } = true; // Propriété pour activer/désactiver la caméra
 
 	public override void _Ready()
 	{
@@ -14,6 +13,9 @@ public partial class CameraFollow : Camera2D
 	}
 	public override void _Process(double delta)
 	{
+		if (ObjectToFollow != null && Enabled)
+		{
 			Position = ObjectToFollow.Position.Round();
+		}
 	}
 }

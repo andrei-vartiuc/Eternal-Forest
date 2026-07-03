@@ -67,6 +67,14 @@ public partial class map_gen_multiplayer : Node2D
             // placement de l'objet si ok
             instance.Position = new Vector2(a, b);
             AddChild(instance);
+
+            // Ajouter les rochers au groupe Rocks et définir leur vie
+            string nameLower = instance.Name.ToString().ToLower();
+            if (nameLower.Contains("rock") || nameLower.Contains("iron") || nameLower.Contains("cuivre") || nameLower.Contains("ore"))
+            {
+                instance.AddToGroup("Rocks");
+                instance.SetMeta("health", 3);
+            }
         }
     }
 }
